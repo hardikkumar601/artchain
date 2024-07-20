@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useContext } from 'react';
-import ArtLogo from '../../assets/orderImg.jpeg';
-import './OrderCreation.css';
-import { addArt, getAllArts } from '../../utils/db';
-import { Link } from 'react-router-dom';
-import { ArtStatusContext } from '../../context/ArtStatusContext';
-import { TransactionContext } from '../../contest/TransactionContext'; // Corrected import path
-import { ethers } from 'ethers';
+import React, { useState, useEffect, useContext } from "react";
+import ArtLogo from "../../assets/orderImg.jpeg";
+import "./OrderCreation.css";
+import { addArt, getAllArts } from "../../utils/db";
+import { Link } from "react-router-dom";
+import { ArtStatusContext } from "../../context/ArtStatusContext";
+import { TransactionContext } from "../../contest/TransactionContext"; // Corrected import path
+import { ethers } from "ethers";
 
 const OrderCreation = () => {
   const { purchaseArt } = useContext(TransactionContext);
@@ -15,10 +15,10 @@ const OrderCreation = () => {
   const [formData, setFormData] = useState({
     image: null,
     creatorImage: null,
-    title: '',
-    description: '',
-    price: '',
-    creatorName: ''
+    title: "",
+    description: "",
+    price: "",
+    creatorName: "",
   });
   const [arts, setArts] = useState([]);
   const { artStatus, setArtStatus } = useContext(ArtStatusContext);
@@ -27,7 +27,9 @@ const OrderCreation = () => {
     const checkWalletConnection = async () => {
       if (window.ethereum) {
         try {
-          const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+          const accounts = await window.ethereum.request({
+            method: "eth_accounts",
+          });
           if (accounts.length > 0) {
             setIsWalletConnected(true);
           }
@@ -50,13 +52,15 @@ const OrderCreation = () => {
   const connectWallet = async () => {
     if (window.ethereum) {
       try {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        await window.ethereum.request({ method: "eth_requestAccounts" });
         setIsWalletConnected(true);
       } catch (error) {
         console.error("Error connecting to MetaMask:", error);
       }
     } else {
-      alert("MetaMask is not installed. Please install it to use this feature.");
+      alert(
+        "MetaMask is not installed. Please install it to use this feature."
+      );
     }
   };
 
@@ -81,12 +85,12 @@ const OrderCreation = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    data.append('image', formData.image);
-    data.append('creatorImage', formData.creatorImage);
-    data.append('title', formData.title);
-    data.append('description', formData.description);
-    data.append('price', formData.price);
-    data.append('creatorName', formData.creatorName);
+    data.append("image", formData.image);
+    data.append("creatorImage", formData.creatorImage);
+    data.append("title", formData.title);
+    data.append("description", formData.description);
+    data.append("price", formData.price);
+    data.append("creatorName", formData.creatorName);
 
     await addArt(data);
     const savedArts = await getAllArts();
@@ -95,21 +99,21 @@ const OrderCreation = () => {
   };
 
   const handleBuyArt = async (id, price) => {
-    setArtStatus((prevStatus) => ({ ...prevStatus, [id]: 'processing' }));
+    setArtStatus((prevStatus) => ({ ...prevStatus, [id]: "processing" }));
     try {
-      if (!window.ethereum) throw new Error('MetaMask is not installed');
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+      if (!window.ethereum) throw new Error("MetaMask is not installed");
+      await window.ethereum.request({ method: "eth_requestAccounts" });
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
       const tx = await signer.sendTransaction({
-        to: '0x1853E7DE95130a304e4dF355CF8aB7AE80160189', 
-        value: ethers.utils.parseEther(price.toString())
+        to: "0x1853E7DE95130a304e4dF355CF8aB7AE80160189",
+        value: ethers.utils.parseEther(price.toString()),
       });
       await tx.wait();
-      setArtStatus((prevStatus) => ({ ...prevStatus, [id]: 'bought' }));
+      setArtStatus((prevStatus) => ({ ...prevStatus, [id]: "bought" }));
     } catch (error) {
       console.error(error);
-      setArtStatus((prevStatus) => ({ ...prevStatus, [id]: 'unsold' }));
+      setArtStatus((prevStatus) => ({ ...prevStatus, [id]: "unsold" }));
     }
   };
 
@@ -117,7 +121,9 @@ const OrderCreation = () => {
     <div className="--orderCreation-header">
       {!isWalletConnected ? (
         <div className="connect-wallet">
-          <button onClick={connectWallet} className="button">Connect Wallet</button>
+          <button onClick={connectWallet} className="button">
+            Connect Wallet
+          </button>
         </div>
       ) : (
         <>
@@ -129,7 +135,9 @@ const OrderCreation = () => {
               <h1>
                 Extraordinary <br /> <span>Art</span> you'll love
               </h1>
-              <button className="button" onClick={openModal}>Create Art</button>
+              <button className="button" onClick={openModal}>
+                Create Art
+              </button>
               <Link to="/artMarket">
                 <button className="button">Art Market</button>
               </Link>
@@ -143,14 +151,21 @@ const OrderCreation = () => {
           <section className="artSection">
             {arts.map((art) => (
               <div key={art._id} className="artSection-one">
-                <p>{artStatus[art._id] === 'bought' ? 'Sold' : 'Unsold'}</p>
-                <img className='artsectionImage' src={`http://localhost:5000/${art.image}`} alt={art.title} />
-                <div className='artDetails'>
+                <p>{artStatus[art._id] === "bought" ? "Sold" : "Unsold"}</p>
+                <img
+                  className="artsectionImage"
+                  src={`https://artchain-7vbx.onrender.com/${art.image}`}
+                  alt={art.title}
+                />
+                <div className="artDetails">
                   <div>
                     <h2>{art.title}</h2>
                   </div>
                   <div className="creator">
-                    <img src={`http://localhost:5000/${art.creatorImage}`} alt={art.creatorName} />
+                    <img
+                      src={`https://artchain-7vbx.onrender.com/${art.creatorImage}`}
+                      alt={art.creatorName}
+                    />
                     <h4 className="creatorName">{art.creatorName}</h4>
                   </div>
                   <div className="artTag">
@@ -162,15 +177,18 @@ const OrderCreation = () => {
                     <div>
                       <h2>{art.price} cUSD</h2>
                     </div>
-                    <button 
-                      className="artTag-btn" 
-                      onClick={() => handleBuyArt(art._id, art.price)} 
-                      disabled={artStatus[art._id] === 'bought' || artStatus[art._id] === 'processing'}
+                    <button
+                      className="artTag-btn"
+                      onClick={() => handleBuyArt(art._id, art.price)}
+                      disabled={
+                        artStatus[art._id] === "bought" ||
+                        artStatus[art._id] === "processing"
+                      }
                     >
-                      {artStatus[art._id] === 'processing' 
-                        ? 'Processing' 
-                        : artStatus[art._id] === 'bought' 
-                        ? 'Art Purchased' 
+                      {artStatus[art._id] === "processing"
+                        ? "Processing"
+                        : artStatus[art._id] === "bought"
+                        ? "Art Purchased"
                         : `Buy Art for ${art.price}`}
                     </button>
                   </div>
@@ -182,32 +200,67 @@ const OrderCreation = () => {
           {isModalOpen && (
             <div className="modal">
               <div className="modal-content">
-                <span className="close" onClick={closeModal}>&times;</span>
+                <span className="close" onClick={closeModal}>
+                  &times;
+                </span>
                 <h2>Create New Art</h2>
                 <form onSubmit={handleSubmit}>
                   <label>
                     Image:
-                    <input type="file" name="image" onChange={handleFileChange} required />
+                    <input
+                      type="file"
+                      name="image"
+                      onChange={handleFileChange}
+                      required
+                    />
                   </label>
                   <label>
                     Creator Image:
-                    <input type="file" name="creatorImage" onChange={handleFileChange} required />
+                    <input
+                      type="file"
+                      name="creatorImage"
+                      onChange={handleFileChange}
+                      required
+                    />
                   </label>
                   <label>
                     Title:
-                    <input type="text" name="title" value={formData.title} onChange={handleInputChange} required />
+                    <input
+                      type="text"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </label>
                   <label>
                     Description:
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} required />
+                    <textarea
+                      name="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </label>
                   <label>
                     Price:
-                    <input type="number" name="price" value={formData.price} onChange={handleInputChange} required />
+                    <input
+                      type="number"
+                      name="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </label>
                   <label>
                     Creator Name:
-                    <input type="text" name="creatorName" value={formData.creatorName} onChange={handleInputChange} required />
+                    <input
+                      type="text"
+                      name="creatorName"
+                      value={formData.creatorName}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </label>
                   <button type="submit">Submit</button>
                 </form>
